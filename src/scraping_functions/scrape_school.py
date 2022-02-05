@@ -8,9 +8,13 @@ from src.output_data.output_data import output_play_by_play_data
 
 def scrape_school(school):
 
-    school_name = get_school_name(school)
-    print("Beginning to scrape: ", school_name)
-    year = get_year(school)
+    try:
+        school_name = get_school_name(school)
+        print("Beginning to scrape: ", school_name)
+        year = get_year(school)
+    except:
+        print(str(school["url_part_1"]+school["url_part_2"]), "failed")
+        return
     
     formatted_school_name = format_school_name(school_name)
     
@@ -25,9 +29,12 @@ def scrape_school(school):
     for count, link in enumerate(game_links):
         if count == half_game_links or count == (half_game_links - 0.5):
             print(school_name, "50% complete")
-        game_data = scrape_game(link, school_name)
-        play_by_play_data += format_game_data(game_data, school_name)
-    
+        try:
+            game_data = scrape_game(link, school_name)
+            play_by_play_data += format_game_data(game_data, school_name)
+        except:
+            continue
+        
     output_play_by_play_data(play_by_play_data, formatted_school_name, year)
     
     print(school_name, "completed")
