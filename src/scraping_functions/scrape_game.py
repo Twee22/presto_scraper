@@ -24,6 +24,7 @@ def scrape_game(link, school_name):
         
         return results
     except:
+        # This triggers if the game can't be scraped
         return []
 
 def get_starting_pitchers(link, school_name):
