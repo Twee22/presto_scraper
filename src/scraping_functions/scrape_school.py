@@ -13,6 +13,7 @@ def scrape_school(school):
         print("Beginning to scrape: ", school_name)
         year = get_year(school)
     except:
+        # This triggers if the school doesn't exist
         print(str(school["url_part_1"]+school["url_part_2"]), "failed")
         return
     
@@ -33,6 +34,7 @@ def scrape_school(school):
             game_data = scrape_game(link, school_name)
             play_by_play_data += format_game_data(game_data, school_name)
         except:
+            # This triggers if the game can't be scraped
             continue
         
     output_play_by_play_data(play_by_play_data, formatted_school_name, year)
