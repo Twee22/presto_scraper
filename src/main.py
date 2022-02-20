@@ -11,10 +11,10 @@ def main():
     disable_warnings()
     check_data_file_exists()
     
-    '''school_list = get_all_school_links()
+    school_list = get_all_school_links()
     
     for school in school_list:
-        scrape_school(school)'''
+        scrape_school(school)
         
     get_lineup_and_stats()
     
