@@ -24,9 +24,50 @@ def scrape_lineup_and_stats(page):
     
     check = check_school_file_exists(formatted_school_name, year)
     
-    print("Scraping Lineup for {} in {}".format(school_name, year))
+    print("Scraping Lineup and Official Statistics for {} in {}".format(school_name, year))
     
     scrape_lineup(page, formatted_school_name, year)
+    
+    scrape_stats(page, formatted_school_name, year)
+    
+def scrape_stats(page, formatted_school_name, year):
+    URL = page
+    r = requests.get(URL, headers=headers, verify=False)
+    
+    soup = BeautifulSoup(r.content, 'html.parser')
+    
+    file_destination = ("data/" + formatted_school_name + "/" + 
+        year + "/" + formatted_school_name + 
+        "_official_statistics_" + year + ".txt")
+    
+    with open(file_destination, "w") as f:
+        f.write("")
+    
+    with open(file_destination, "a") as f:
+        counter = 0
+        for r in soup.find_all("div", {"class": "stats-box stats-box-alternate full clearfix"}):
+            if counter == 0:
+                f.write("HITTING\n")
+            elif counter == 1:
+                f.write("EXTENDED HITTING\n")
+            elif counter == 2:
+                f.write("PITCHING\n")
+            elif counter == 3:
+                f.write("FIELDING\n")
+            counter += 1
+            
+            for tr in r.find_all('tr')[2:]:
+                tds = tr.find_all('td')
+                try:
+                    stat_line = []
+                    for td in tds:
+                        stat_line.append(td.text.strip())
+                    stat_line = "\t".join(stat_line)
+                    f.write(stat_line + "\n")
+                except:
+                    continue
+        
+    return
     
 def scrape_lineup(page, formatted_school_name, year):
     URL = page
@@ -91,7 +132,10 @@ def get_team_lineup_pages():
     r = requests.get(URL, headers=headers, verify=False)
 
     links = re.findall(r"href=\".*/teams/.*\"", r.text)
-    links = list(set(links))
+    
+    new_links = []
+    [new_links.append(x) for x in links if x not in new_links]  
+    links = new_links
     
     links = [l[6:-1] for l in links]
     links = [url_part_1 + l for l in links]
