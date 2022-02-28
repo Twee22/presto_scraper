@@ -1,3 +1,4 @@
+from os import stat
 import requests
 import re
 
@@ -17,18 +18,22 @@ def get_lineup_and_stats():
     
     
 def scrape_lineup_and_stats(page):
-    school_name = scrape_lineup_name(page)
-    year = scrape_lineup_year(page)
     
-    formatted_school_name = format_school_name(school_name)
-    
-    check = check_school_file_exists(formatted_school_name, year)
-    
-    print("Scraping Lineup and Official Statistics for {} in {}".format(school_name, year))
-    
-    scrape_lineup(page, formatted_school_name, year)
-    
-    scrape_stats(page, formatted_school_name, year)
+    try:
+        school_name = scrape_lineup_name(page)
+        year = scrape_lineup_year(page)
+        
+        formatted_school_name = format_school_name(school_name)
+        
+        check = check_school_file_exists(formatted_school_name, year)
+        
+        print("Scraping Lineup and Official Statistics for {} in {}".format(school_name, year))
+        
+        scrape_lineup(page, formatted_school_name, year)
+        
+        scrape_stats(page, formatted_school_name, year)
+    except:
+        return
     
 def scrape_stats(page, formatted_school_name, year):
     URL = page
@@ -63,6 +68,7 @@ def scrape_stats(page, formatted_school_name, year):
                     for td in tds:
                         stat_line.append(td.text.strip())
                     stat_line = "\t".join(stat_line)
+                    stat_line = stat_line.replace("\t\t", "\t-\t")
                     f.write(stat_line + "\n")
                 except:
                     continue
